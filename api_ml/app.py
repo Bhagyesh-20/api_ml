@@ -23,6 +23,9 @@ class_names = [
     'Verticilium'
 ]
 
+@app.get("/")
+async def root():
+    return {"message": "Welcome to the Crop Disease Prediction API!"}
 
 @app.post("/predict/")
 async def predict(file: UploadFile = File(...)):
@@ -49,3 +52,6 @@ async def predict(file: UploadFile = File(...)):
         logger.error("Error processing file: %s", str(e))
         raise HTTPException(status_code=400, detail="Could not process the file")
 
+if __name__ == '__main__':
+    import uvicorn
+    uvicorn.run(app)
