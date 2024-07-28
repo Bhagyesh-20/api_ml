@@ -14,7 +14,13 @@ logger = logging.getLogger("predict_logger")
 logging.basicConfig(level=logging.DEBUG)
 
 # AWS S3 configuration
-S3_BUCKET_NAME = 'your-bucket-name'
+from dotenv import load_dotenv
+import os
+
+load_dotenv()
+
+# Access the environment variables
+S3_BUCKET_NAME = os.getenv('S3_BUCKET_NAME')
 MODEL_FILE_NAME = 'crop_disease_model.h5'
 
 # Download model from S3
