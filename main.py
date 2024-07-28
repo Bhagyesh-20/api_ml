@@ -7,25 +7,30 @@ import logging
 import io
 import boto3
 import os
+from dotenv import load_dotenv
 
+# Initialize FastAPI app
 app = FastAPI()
 
+# Configure logging
 logger = logging.getLogger("predict_logger")
 logging.basicConfig(level=logging.DEBUG)
 
-# AWS S3 configuration
-from dotenv import load_dotenv
-import os
-
+# Load environment variables
 load_dotenv()
 
-# Access the environment variables
+# AWS S3 configuration
 S3_BUCKET_NAME = os.getenv('S3_BUCKET_NAME')
 MODEL_FILE_NAME = 'crop_disease_model.h5'
 
 # Download model from S3
 def download_model_from_s3():
-    s3 = boto3.client('s3')
+    s3 = boto3.client(
+        's3',
+        aws_access_key_id=os.getenv('AWS_ACCESS_KEY_ID'),
+        aws_secret_access_key=os.getenv('AWS_SECRET_ACCESS_KEY'),
+        region_name=os.getenv('AWS_REGION')
+    )
     s3.download_file(S3_BUCKET_NAME, MODEL_FILE_NAME, MODEL_FILE_NAME)
 
 # Ensure model file is present
@@ -33,8 +38,10 @@ if not os.path.exists(MODEL_FILE_NAME):
     logger.info("Downloading model from S3...")
     download_model_from_s3()
 
+# Load the model
 model = load_model(MODEL_FILE_NAME)
 
+# Class names for the predictions
 class_names = [
     'Anthracnose', 'Apple Scab', 'Black Spot', 
     'Blight', 'Blossom End Rot', 'Botrytis', 'Brown Rot',
