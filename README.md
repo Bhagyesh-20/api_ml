@@ -71,7 +71,7 @@ The model can predict the following crop diseases:
     python app.py
     ```
 
-2. The API will be available at `http://localhost:8000`.
+2. The API will be available at `http://localhost:8000/predict`.
 
 ### API Endpoints
 
