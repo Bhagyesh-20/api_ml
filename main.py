@@ -9,8 +9,22 @@ import boto3
 import os
 from dotenv import load_dotenv
 
+from fastapi.middleware.cors import CORSMiddleware
+
+
+# Allow all origins (for development purposes only, be more restrictive in production)
+
+
 # Initialize FastAPI app
 app = FastAPI()
+
+app.add_middleware(
+    CORSMiddleware,
+    allow_origins=["*"],  # Change this to the specific domain in production
+    allow_credentials=True,
+    allow_methods=["*"],
+    allow_headers=["*"],
+)
 
 # Configure logging
 logger = logging.getLogger("predict_logger")
