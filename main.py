@@ -86,11 +86,15 @@ async def predict(file: UploadFile = File(...)):
         if len(prediction) == 0 or len(prediction[0]) == 0:
             raise ValueError("Empty prediction returned by the model")
 
+        # Flatten the prediction array if it's a 2D array with a single row
+        if len(prediction.shape) == 2 and prediction.shape[0] == 1:
+            prediction = prediction[0]
+
         predicted_class = np.argmax(prediction)
         logger.debug("Predicted class index: %d", predicted_class)
 
         if predicted_class >= len(class_names):
-            raise ValueError("Predicted class index out of range")
+            raise ValueError(f"Predicted class index out of range: {predicted_class}")
 
         predicted_class_name = class_names[predicted_class]
         logger.debug("Predicted class name: %s", predicted_class_name)
