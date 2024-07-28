@@ -41,8 +41,8 @@ The model can predict the following crop diseases:
 
 1. Clone the repository:
     ```sh
-    git clone https://github.com/yourusername/crop-disease-prediction-api.git
-    cd crop-disease-prediction-api
+    git clone https://github.com/Bhagyesh-20/api_ml.git
+    cd api_ml
     ```
 
 2. Install the required packages:
