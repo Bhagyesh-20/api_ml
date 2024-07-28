@@ -5,14 +5,29 @@ import numpy as np
 from tensorflow.keras.models import load_model
 import logging
 import io
+import boto3
+import os
 
 app = FastAPI()
 
 logger = logging.getLogger("predict_logger")
 logging.basicConfig(level=logging.DEBUG)
 
-model_path = "crop_disease_model.h5"  
-model = load_model(model_path)
+# AWS S3 configuration
+S3_BUCKET_NAME = 'your-bucket-name'
+MODEL_FILE_NAME = 'crop_disease_model.h5'
+
+# Download model from S3
+def download_model_from_s3():
+    s3 = boto3.client('s3')
+    s3.download_file(S3_BUCKET_NAME, MODEL_FILE_NAME, MODEL_FILE_NAME)
+
+# Ensure model file is present
+if not os.path.exists(MODEL_FILE_NAME):
+    logger.info("Downloading model from S3...")
+    download_model_from_s3()
+
+model = load_model(MODEL_FILE_NAME)
 
 class_names = [
     'Anthracnose', 'Apple Scab', 'Black Spot', 
@@ -54,4 +69,4 @@ async def predict(file: UploadFile = File(...)):
 
 if __name__ == '__main__':
     import uvicorn
-    uvicorn.run(app)
+    uvicorn.run(app, host="0.0.0.0", port=8000)
