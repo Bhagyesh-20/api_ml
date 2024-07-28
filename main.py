@@ -8,16 +8,12 @@ import io
 import boto3
 import os
 from dotenv import load_dotenv
-
 from fastapi.middleware.cors import CORSMiddleware
-
-
-# Allow all origins (for development purposes only, be more restrictive in production)
-
 
 # Initialize FastAPI app
 app = FastAPI()
 
+# Configure CORS
 app.add_middleware(
     CORSMiddleware,
     allow_origins=["*"],  # Change this to the specific domain in production
@@ -55,14 +51,14 @@ if not os.path.exists(MODEL_FILE_NAME):
 # Load the model
 model = load_model(MODEL_FILE_NAME)
 
-# Class names for the predictions
+# Class names for the predictions (ensure this list matches the model output classes)
 class_names = [
     'Anthracnose', 'Apple Scab', 'Black Spot', 
     'Blight', 'Blossom End Rot', 'Botrytis', 'Brown Rot',
     'Canker', 'Cedar Apple Rust', 'Clubroot', 'Crown Gall',
     'Downy Mildew', 'Fire Blight', 'Fusarium', 'Gray Mold',
     'Leaf Spots', 'Mosaic Virus', 'Nematodes', 'Powdery Mildew',
-    'Verticilium'
+    'Verticillium'
 ]
 
 @app.get("/")
@@ -85,8 +81,19 @@ async def predict(file: UploadFile = File(...)):
 
         # Make prediction
         prediction = model.predict(image)
+        logger.debug("Prediction raw output: %s", prediction)
+
+        if len(prediction) == 0 or len(prediction[0]) == 0:
+            raise ValueError("Empty prediction returned by the model")
+
         predicted_class = np.argmax(prediction)
+        logger.debug("Predicted class index: %d", predicted_class)
+
+        if predicted_class >= len(class_names):
+            raise ValueError("Predicted class index out of range")
+
         predicted_class_name = class_names[predicted_class]
+        logger.debug("Predicted class name: %s", predicted_class_name)
 
         return JSONResponse(content={"prediction": predicted_class_name})
 
