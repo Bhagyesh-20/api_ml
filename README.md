@@ -33,7 +33,7 @@ The model can predict the following crop diseases:
 
 - Python 3.10 
 - TensorFlow
-- Flask
+- FastAPI
 - boto3 (for accessing AWS S3)
 - requests (for making HTTP requests)
 
