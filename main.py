@@ -49,7 +49,12 @@ if not os.path.exists(MODEL_FILE_NAME):
     download_model_from_s3()
 
 # Load the model
-model = load_model(MODEL_FILE_NAME)
+try:
+    model = load_model(MODEL_FILE_NAME)
+    logger.info("Model loaded successfully")
+except Exception as e:
+    logger.error(f"Failed to load model: {e}")
+    raise RuntimeError("Failed to load model")
 
 # Class names for the predictions (ensure this list matches the model output classes)
 class_names = [
